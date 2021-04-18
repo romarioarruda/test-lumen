@@ -4,14 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
 class UserController extends Controller
 {
-    
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function listUsers()
     {
-        return User::all();
+        return User::user();
     }
 
     public function listOneUser(int $id)
@@ -28,9 +33,10 @@ class UserController extends Controller
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' =>  Crypt::encrypt($request->password)
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => $request->input('password')
+            // 'password' => Crypt::encrypt($request->input('password'))
         ]);
 
         if ($user->save()) {
